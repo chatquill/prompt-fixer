@@ -1,10 +1,12 @@
-# prompt-fixer
+# Prompt Fixer
 
-A Claude skill that turns a rough prompt into one Claude Code can run in a single pass.
+A Claude plugin that turns a rough prompt into one Claude Code can run in a single pass.
 
-You paste a vague request like "the discount is wrong, can you fix it". The skill asks you up to four short questions: which file, what the error is, what "fixed" looks like. Then it gives you back a short prompt you can copy and run, with a suggested model and effort level. It doesn't run your task and doesn't read your project files. It only asks you, because you already know the answers.
+You paste a vague request like "the discount is wrong, can you fix it". Prompt Fixer asks you up to four short questions: which file, what the error is, what "fixed" looks like. Then it hands back a short prompt you can copy and run, with a suggested model and effort level. It doesn't run your task or read your project files. It asks you instead, because you already know the answers.
 
-It works for any codebase. The examples and test commands lean toward Salesforce (Apex, LWC, Flow, metadata), because that's where it started.
+It works with any codebase. The examples and test commands lean toward Salesforce (Apex, LWC, Flow, metadata), because that's where it started.
+
+**Quick install:** go to [claude.ai/customize/plugins](https://claude.ai/customize/plugins), open **Discover**, search for **Prompt Fixer** and select **Add**. Other ways to install are [below](#install).
 
 ## What it does
 
@@ -24,7 +26,7 @@ You type:
 hi, the discount is wrong can you please fix it and make no mistakes thanks
 ```
 
-The skill asks which file and method, what input gives the wrong result, and which test covers it. Then it returns:
+Prompt Fixer asks which file and method, what input gives the wrong result, and which test covers it. Then it returns:
 
 ```text
 In @force-app/main/default/classes/OpportunityService.cls, calculateDiscount returns 0
@@ -40,7 +42,7 @@ Run it now, or edit first?
 
 ## Install
 
-Pick the option that matches where you use Claude.
+Option 1 suits most people. The others are for when you can't use the directory or want to install from source.
 
 ### Option 1: From the Claude directory (easiest)
 
@@ -50,13 +52,13 @@ Prompt Fixer is listed in Anthropic's plugin directory. You need a Pro, Max, Tea
 2. Open **Discover** and search for **Prompt Fixer**.
 3. Select it, then select **Add**.
 
-That's it. The plugin is saved to your account, so it works in Claude chat, Cowork and Claude Code without installing it again. In Claude Code, run `/reload-plugins` or start a new session to load it. Updates arrive on their own.
+The plugin is saved to your account, so it works in Claude chat, Cowork and Claude Code without installing it again. In Claude Code, run `/reload-plugins` or start a new session to load it. Updates arrive on their own.
 
-On Team and Enterprise plans, an Owner decides whether members can see the directory. If you can't find it, ask them.
+On Team and Enterprise plans, an Owner decides whether members can see the directory. If you can't find Prompt Fixer, ask them.
 
 ### Option 2: Claude Code plugin from GitHub
 
-This installs the plugin from this repository on one machine only. Run these two commands inside Claude Code:
+This installs the plugin straight from this repository, on one machine only. Run these two commands inside Claude Code:
 
 ```text
 /plugin marketplace add chatquill/prompt-fixer
@@ -64,8 +66,6 @@ This installs the plugin from this repository on one machine only. Run these two
 ```
 
 Then run `/reload-plugins` or start a new session.
-
-To get new versions later, run `/plugin marketplace update prompt-fixer`.
 
 ### Option 3: Copy the skill folder into Claude Code
 
@@ -116,14 +116,32 @@ Skills need code execution to be turned on in your settings. On Team and Enterpr
 In Claude Code, type:
 
 ```text
-/prompt-fixer the discount is wrong, fix it
+/prompt-fixer:prompt-fixer the discount is wrong, fix it
 ```
 
-If you installed it as a plugin (Options 1 and 2), the full name is `/prompt-fixer:prompt-fixer`. Typing `/prompt-fixer` and picking it from the list works too.
+You can also type `/prompt-fixer` and pick it from the list. If you copied the folder (Option 3), the command is just `/prompt-fixer`.
 
-You don't have to use the slash command. Claude also picks up the skill when you paste a draft prompt and ask it to improve, fix, rewrite or tighten it, or ask "how should I ask Claude this?"
+In Claude chat or Cowork, type `/` in the message box and pick Prompt Fixer, or paste your draft and ask Claude to improve it.
+
+You don't have to use the slash command. Claude picks up the skill when you paste a draft prompt and ask it to improve, fix, rewrite or tighten it, or ask "how should I ask Claude this?"
 
 Answer the questions, then copy the prompt it returns. Or reply "run it" and Claude will run the improved prompt as the task.
+
+Prompt Fixer is written for Claude Code. In chat and Cowork it still sharpens your prompt, but tips about Claude Code commands such as `/clear` or plan mode won't apply there.
+
+## Updating
+
+- **Claude directory (Option 1):** updates are automatic.
+- **GitHub plugin (Option 2):** run `/plugin marketplace update prompt-fixer` in Claude Code.
+- **Copied folder (Option 3):** pull the latest version and copy it again:
+
+  ```bash
+  cd prompt-fixer
+  git pull
+  cp -r skills/prompt-fixer ~/.claude/skills/
+  ```
+
+- **Uploaded skill (Option 4):** delete the old skill in Settings and upload `prompt-fixer.skill` from the latest release.
 
 ## Files
 
@@ -139,26 +157,16 @@ skills/prompt-fixer/
 
 `templates.md` covers debugging (exceptions, failing tests, governor limits, deploy errors, LWC and flow faults, regressions), building (Apex classes, triggers, test classes, LWC, metadata, flows, refactors), and planning or review. Claude reads only the section it needs.
 
-## Updating
-
-If you added it from the Claude directory, updates are automatic. If you installed it from GitHub in Claude Code, run `/plugin marketplace update prompt-fixer`.
-
-If you copied the folder, pull the latest version and copy it again:
-
-```bash
-cd prompt-fixer
-git pull
-cp -r skills/prompt-fixer ~/.claude/skills/
-```
-
-For Claude.ai, delete the old skill in Settings and upload the `prompt-fixer.skill` from the latest release.
-
 To build the `.skill` file yourself:
 
 ```bash
 cd skills
 zip -r ../prompt-fixer.skill prompt-fixer
 ```
+
+## Feedback
+
+Found a prompt it handles badly, or have an idea? [Open an issue](https://github.com/chatquill/prompt-fixer/issues). Include your original prompt and what you expected to get back.
 
 ## Privacy
 
