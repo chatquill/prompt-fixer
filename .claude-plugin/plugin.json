@@ -1,0 +1,13 @@
+{
+  "name": "prompt-fixer",
+  "version": "1.0.0",
+  "description": "Turns a rough prompt into a precise one Claude Code can run in one pass, by asking a few targeted questions first.",
+  "author": {
+    "name": "Shakeel Mohun",
+    "url": "https://github.com/chatquill"
+  },
+  "homepage": "https://github.com/chatquill/prompt-fixer",
+  "repository": "https://github.com/chatquill/prompt-fixer",
+  "license": "MIT",
+  "keywords": ["prompt", "prompt-engineering", "skill", "salesforce", "apex", "lwc"]
+}

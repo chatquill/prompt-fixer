@@ -1,0 +1,19 @@
+{
+  "name": "prompt-fixer",
+  "owner": {
+    "name": "Shakeel Mohun",
+    "url": "https://github.com/chatquill"
+  },
+  "metadata": {
+    "description": "The prompt-fixer plugin for Claude Code."
+  },
+  "plugins": [
+    {
+      "name": "prompt-fixer",
+      "source": "./",
+      "description": "Turns a rough prompt into a precise one Claude Code can run in one pass, by asking a few targeted questions first.",
+      "version": "1.0.0",
+      "category": "productivity"
+    }
+  ]
+}

@@ -42,9 +42,22 @@ Run it now, or edit first?
 
 Pick the option that matches where you use Claude.
 
-### Option 1: Claude Code, for all your projects
+### Option 1: Claude Code plugin (recommended)
 
-This makes the skill available in every project on your machine.
+This repository is also a plugin marketplace, so you can install the skill straight from GitHub. Run these two commands inside Claude Code:
+
+```text
+/plugin marketplace add chatquill/prompt-fixer
+/plugin install prompt-fixer@prompt-fixer
+```
+
+Then run `/reload-plugins` or start a new session. The skill is now available in every project.
+
+To get new versions later, run `/plugin marketplace update prompt-fixer`.
+
+### Option 2: Copy the skill folder into Claude Code
+
+Use this if you'd rather not install a plugin.
 
 1. Clone this repository:
 
@@ -52,37 +65,30 @@ This makes the skill available in every project on your machine.
    git clone https://github.com/chatquill/prompt-fixer.git
    ```
 
-2. Copy the skill folder into your personal skills folder:
+2. Copy the skill folder. For all your projects, copy it into your personal skills folder:
 
    ```bash
    mkdir -p ~/.claude/skills
-   cp -r prompt-fixer/prompt-fixer ~/.claude/skills/
+   cp -r prompt-fixer/skills/prompt-fixer ~/.claude/skills/
    ```
 
    On Windows (PowerShell):
 
    ```powershell
    New-Item -ItemType Directory -Force "$HOME\.claude\skills"
-   Copy-Item -Recurse prompt-fixer\prompt-fixer "$HOME\.claude\skills\"
+   Copy-Item -Recurse prompt-fixer\skills\prompt-fixer "$HOME\.claude\skills\"
    ```
 
-3. Check that this file exists: `~/.claude/skills/prompt-fixer/SKILL.md`
+   For one project only, copy it into that project instead, then commit the folder so your team gets it too:
+
+   ```bash
+   mkdir -p .claude/skills
+   cp -r /path/to/prompt-fixer/skills/prompt-fixer .claude/skills/
+   ```
+
+3. Check that `SKILL.md` is at `~/.claude/skills/prompt-fixer/SKILL.md` (or `.claude/skills/prompt-fixer/SKILL.md` in your project).
 
 4. Start a new Claude Code session. A session that was already open won't see the new skill.
-
-### Option 2: Claude Code, for one project only
-
-Use this if you want the skill shared with your team through the project's git repository.
-
-From the root of your project:
-
-```bash
-git clone https://github.com/chatquill/prompt-fixer.git /tmp/prompt-fixer
-mkdir -p .claude/skills
-cp -r /tmp/prompt-fixer/prompt-fixer .claude/skills/
-```
-
-The skill now lives at `.claude/skills/prompt-fixer/SKILL.md`. Commit that folder so everyone on the project gets it.
 
 ### Option 3: Claude.ai or the Claude desktop app
 
@@ -101,6 +107,8 @@ In Claude Code, type:
 /prompt-fixer the discount is wrong, fix it
 ```
 
+If you installed it as a plugin, the full name is `/prompt-fixer:prompt-fixer`. Typing `/prompt-fixer` and picking it from the list works too.
+
 You don't have to use the slash command. Claude also picks up the skill when you paste a draft prompt and ask it to improve, fix, rewrite or tighten it, or ask "how should I ask Claude this?"
 
 Answer the questions, then copy the prompt it returns. Or reply "run it" and Claude will run the improved prompt as the task.
@@ -108,23 +116,32 @@ Answer the questions, then copy the prompt it returns. Or reply "run it" and Cla
 ## Files
 
 ```text
-prompt-fixer/
+.claude-plugin/
+├── plugin.json              Plugin manifest
+└── marketplace.json         Lets this repo work as its own marketplace
+skills/prompt-fixer/
 ├── SKILL.md                 The instructions Claude follows
 └── references/
     └── templates.md         Ready-made prompt shapes for common tasks
-prompt-fixer.skill           The same folder, zipped for upload to Claude.ai
+prompt-fixer.skill           The skill folder, zipped for upload to Claude.ai
 ```
 
 `templates.md` covers debugging (exceptions, failing tests, governor limits, deploy errors, LWC and flow faults, regressions), building (Apex classes, triggers, test classes, LWC, metadata, flows, refactors), and planning or review. Claude reads only the section it needs.
 
 ## Updating
 
-Pull the latest version and copy the folder again:
+Plugin users: run `/plugin marketplace update prompt-fixer`.
+
+If you copied the folder, pull the latest version and copy it again:
 
 ```bash
 cd prompt-fixer
 git pull
-cp -r prompt-fixer ~/.claude/skills/
+cp -r skills/prompt-fixer ~/.claude/skills/
 ```
 
 For Claude.ai, delete the old skill in Settings and upload the new `prompt-fixer.skill`.
+
+## License
+
+[MIT](LICENSE)
