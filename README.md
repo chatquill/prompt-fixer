@@ -92,7 +92,7 @@ Use this if you'd rather not install a plugin.
 
 ### Option 3: Claude.ai or the Claude desktop app
 
-1. Download [`prompt-fixer.skill`](prompt-fixer.skill) from this repository. It's a zip file that contains the skill folder.
+1. Download [`prompt-fixer.skill`](https://github.com/chatquill/prompt-fixer/releases/latest/download/prompt-fixer.skill) from the latest release. It's a zip file that contains the skill folder.
 2. In Claude, open **Settings** and find the **Skills** section (under **Capabilities** on most accounts).
 3. Choose **Upload skill** and select `prompt-fixer.skill`.
 4. Make sure the skill is switched on.
@@ -118,12 +118,12 @@ Answer the questions, then copy the prompt it returns. Or reply "run it" and Cla
 ```text
 .claude-plugin/
 ├── plugin.json              Plugin manifest
+├── icon.png                 Plugin icon
 └── marketplace.json         Lets this repo work as its own marketplace
 skills/prompt-fixer/
 ├── SKILL.md                 The instructions Claude follows
 └── references/
     └── templates.md         Ready-made prompt shapes for common tasks
-prompt-fixer.skill           The skill folder, zipped for upload to Claude.ai
 ```
 
 `templates.md` covers debugging (exceptions, failing tests, governor limits, deploy errors, LWC and flow faults, regressions), building (Apex classes, triggers, test classes, LWC, metadata, flows, refactors), and planning or review. Claude reads only the section it needs.
@@ -140,7 +140,14 @@ git pull
 cp -r skills/prompt-fixer ~/.claude/skills/
 ```
 
-For Claude.ai, delete the old skill in Settings and upload the new `prompt-fixer.skill`.
+For Claude.ai, delete the old skill in Settings and upload the `prompt-fixer.skill` from the latest release.
+
+To build the `.skill` file yourself:
+
+```bash
+cd skills
+zip -r ../prompt-fixer.skill prompt-fixer
+```
 
 ## License
 
