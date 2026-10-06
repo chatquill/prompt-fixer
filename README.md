@@ -148,6 +148,10 @@ cd skills
 zip -r ../prompt-fixer.skill prompt-fixer
 ```
 
+## Privacy
+
+The plugin has no code and sends no data anywhere. It only works with the prompt you type in your own Claude session. See [PRIVACY.md](PRIVACY.md).
+
 ## License
 
 [MIT](LICENSE)
