@@ -118,7 +118,6 @@ Answer the questions, then copy the prompt it returns. Or reply "run it" and Cla
 ```text
 .claude-plugin/
 ├── plugin.json              Plugin manifest
-├── icon.png                 Plugin icon
 └── marketplace.json         Lets this repo work as its own marketplace
 skills/prompt-fixer/
 ├── SKILL.md                 The instructions Claude follows
