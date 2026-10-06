@@ -42,20 +42,32 @@ Run it now, or edit first?
 
 Pick the option that matches where you use Claude.
 
-### Option 1: Claude Code plugin (recommended)
+### Option 1: From the Claude directory (easiest)
 
-This repository is also a plugin marketplace, so you can install the skill straight from GitHub. Run these two commands inside Claude Code:
+Prompt Fixer is listed in Anthropic's plugin directory. You need a Pro, Max, Team or Enterprise plan.
+
+1. Go to [claude.ai/customize/plugins](https://claude.ai/customize/plugins). In the desktop app, this is **Customize > Plugins**.
+2. Open **Discover** and search for **Prompt Fixer**.
+3. Select it, then select **Add**.
+
+That's it. The plugin is saved to your account, so it works in Claude chat, Cowork and Claude Code without installing it again. In Claude Code, run `/reload-plugins` or start a new session to load it. Updates arrive on their own.
+
+On Team and Enterprise plans, an Owner decides whether members can see the directory. If you can't find it, ask them.
+
+### Option 2: Claude Code plugin from GitHub
+
+This installs the plugin from this repository on one machine only. Run these two commands inside Claude Code:
 
 ```text
 /plugin marketplace add chatquill/prompt-fixer
 /plugin install prompt-fixer@prompt-fixer
 ```
 
-Then run `/reload-plugins` or start a new session. The skill is now available in every project.
+Then run `/reload-plugins` or start a new session.
 
 To get new versions later, run `/plugin marketplace update prompt-fixer`.
 
-### Option 2: Copy the skill folder into Claude Code
+### Option 3: Copy the skill folder into Claude Code
 
 Use this if you'd rather not install a plugin.
 
@@ -90,7 +102,7 @@ Use this if you'd rather not install a plugin.
 
 4. Start a new Claude Code session. A session that was already open won't see the new skill.
 
-### Option 3: Claude.ai or the Claude desktop app
+### Option 4: Upload the skill file to Claude.ai
 
 1. Download [`prompt-fixer.skill`](https://github.com/chatquill/prompt-fixer/releases/latest/download/prompt-fixer.skill) from the latest release. It's a zip file that contains the skill folder.
 2. In Claude, open **Settings** and find the **Skills** section (under **Capabilities** on most accounts).
@@ -107,7 +119,7 @@ In Claude Code, type:
 /prompt-fixer the discount is wrong, fix it
 ```
 
-If you installed it as a plugin, the full name is `/prompt-fixer:prompt-fixer`. Typing `/prompt-fixer` and picking it from the list works too.
+If you installed it as a plugin (Options 1 and 2), the full name is `/prompt-fixer:prompt-fixer`. Typing `/prompt-fixer` and picking it from the list works too.
 
 You don't have to use the slash command. Claude also picks up the skill when you paste a draft prompt and ask it to improve, fix, rewrite or tighten it, or ask "how should I ask Claude this?"
 
@@ -129,7 +141,7 @@ skills/prompt-fixer/
 
 ## Updating
 
-Plugin users: run `/plugin marketplace update prompt-fixer`.
+If you added it from the Claude directory, updates are automatic. If you installed it from GitHub in Claude Code, run `/plugin marketplace update prompt-fixer`.
 
 If you copied the folder, pull the latest version and copy it again:
 

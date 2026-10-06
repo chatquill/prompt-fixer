@@ -1,6 +1,6 @@
 {
   "name": "prompt-fixer",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Turns a rough prompt into a precise one Claude Code can run in one pass, by asking a few targeted questions first.",
   "author": {
     "name": "Shakeel Mohun",
