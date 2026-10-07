@@ -1,17 +1,17 @@
 ---
 name: prompt-fixer
-description: Turns a rough or vague Claude Code prompt into a precise, token-efficient one by asking a few targeted questions first. Use whenever the user runs /prompt-fixer, pastes a draft prompt and asks to improve, fix, rewrite, sharpen or optimize it, says things like "make this a good prompt" or "how should I ask Claude this", or wants help phrasing a coding, debugging or Salesforce (Apex, LWC, Flow, metadata) request before running it.
-argument-hint: "[your rough prompt, error or stack trace]"
+description: Turns a rough or vague prompt into a precise one by asking a few targeted questions first. Works for code (Claude Code, debugging, Salesforce Apex, LWC, Flow, metadata) and for everything else (emails, messages, posts, reports, summaries, plans, slides, research). Use whenever the user runs /prompt-fixer, pastes a draft prompt and asks to improve, fix, rewrite, sharpen or optimize it, says things like "make this a good prompt", "help me ask Claude this" or "how should I ask Claude this", or wants help phrasing any request before running it.
+argument-hint: "[your rough prompt, request, error or stack trace]"
 effort: medium
 ---
 
 # Prompt fixer
 
-Take the user's rough prompt, ask only the questions needed to fill the gaps, and return a prompt that Claude Code can execute in one pass.
+Take the user's rough prompt, ask only the questions needed to fill the gaps, and return a prompt that Claude can execute in one pass.
 
 The goal is fewer tokens overall: a precise prompt avoids exploration and correction rounds. So this skill must itself stay cheap. Do not execute the rough prompt, and do not read project files to guess at answers. Ask the user instead; they already know.
 
-Tools: use only AskUserQuestion, and Read for `references/templates.md`. Do not run shell commands (no Bash, grep, cat or date) and do not use Grep or Glob, not even on this skill's own files. Each of those calls stops for a permission prompt, and the user sees nothing but a waiting spinner.
+Tools: use only AskUserQuestion, and Read for this skill's `references/templates.md` and `references/writing.md`. Do not run shell commands (no Bash, grep, cat or date) and do not use Grep or Glob, not even on this skill's own files. Each of those calls stops for a permission prompt, and the user sees nothing but a waiting spinner.
 
 ## Long pastes
 
@@ -24,6 +24,15 @@ Users often paste whole stack traces, debug logs or source files. Do not analyse
 - any secrets to remove
 
 Do not decode timestamps, count repeated lines, compare frames or reason about the root cause. In the improved prompt, never reprint the whole paste. Keep the error line and the top frames, and point to the rest with `@file` or "the full trace is in <path>".
+
+## Step 0: Code or not?
+
+Pick the mode first.
+
+- **Code mode:** the task changes, debugs, reviews or asks about code, configuration, Salesforce metadata, data in an org, a repo or a terminal command. Follow Steps 1 to 4.
+- **Writing mode:** everything else, such as emails, messages, posts, letters, reports, summaries, plans, slides, research, analysing a document, brainstorming, translating or learning a topic. Follow "Writing mode" further down instead of Steps 1 to 4.
+
+If the request names no file, code, error, repo or org, use writing mode. The rules on long pastes, secrets and always returning a prompt apply to both modes.
 
 ## Step 1: Check the five parts
 
@@ -145,6 +154,63 @@ When the input was split into several prompts, give one code block per prompt, e
 
 Do not explain what was changed unless the user asks. If the user says to run it, execute the improved prompt as the task.
 
+## Writing mode
+
+### W1: Check the six parts
+
+A good writing prompt has up to six parts. Mark each as present, missing, or not needed.
+
+| Part | Question it answers |
+| --- | --- |
+| Deliverable and goal | What to produce (email, post, one-page summary, slides) and what it should achieve: get a reply, a yes, a decision, an apology accepted |
+| Audience | Who reads it, how well they know the user, what they already know |
+| Content | The facts only the user knows: what happened, key points, names, dates, numbers, the ask |
+| Tone and style | Formal, friendly, warm, direct, persuasive; whose voice; a sample to match |
+| Format and length | Length, structure (paragraphs, bullets, sections), language, subject line |
+| Constraints | What to include or avoid, sensitive points, a deadline |
+
+Size it to the request. "Make this paragraph sound more professional" with the text pasted needs no questions: write the prompt.
+
+Never invent content. Facts, names, dates, figures, reasons and the ask come from the user. Without them the result is generic filler, however good the wording. If the user does not know or skips one, use a `<placeholder>`.
+
+### W2: Ask
+
+Ask in rounds of at most four questions. Use AskUserQuestion when it is available.
+
+- Ask about content first, because only the user knows it: what is this about, what happened, what do you want the reader to do. Then audience, tone, then format and length.
+- Offer options, so the user can pick instead of type. For tone, for example: "Formal", "Friendly but professional", "Warm and personal", "Short and direct". For length: "3 to 4 sentences", "About 150 words", "One page". Always allow a free-text answer.
+- Add a "You decide" option to style questions (tone, length, format), so the user can skip what they do not care about. Never add it to content questions.
+- When the voice matters (a post under their name, a personal email), offer "Match a sample I'll paste" as a tone option.
+- A second round is allowed, once, when an answer opens something essential. For example, they chose "apologise for the delay": ask what they are offering to put it right. Then write the prompt. Never more than two rounds.
+- Skills: look at the skills listed as available in this session. If one fits the deliverable (a document skill for a report or letter, a slides skill for a deck, a spreadsheet skill for a table, a humanizer or writing-style skill for natural wording, a brand or voice skill), ask in the same round: "Use one of your skills for this?", with the matching skill names as options plus "No skill". Keep it a question of its own; do not merge it into the format or tone question. Offer only skills that appear in the available list, by their exact names. If none fit, do not ask.
+- Without AskUserQuestion (for example in Claude chat), ask in one short message: numbered questions with lettered options, ending with "Reply like: 1b, 2a, 3: your words".
+
+### W3: Write the prompt
+
+- Start with the deliverable and the goal: "Write an email to <who> asking <what>, so that <goal>."
+- Then one short line or a few bullets each for audience, key points, tone, format and length, and constraints. Keep the user's facts word for word.
+- If they chose a skill, add "Use the <skill name> skill."
+- Describe the tone concretely ("friendly and brief, like a message to a colleague") instead of stacking adjectives ("engaging, compelling, impactful").
+- If they want options, say how many: "Give 3 subject lines."
+- Remove greetings, thanks, personas ("You are a world-class copywriter"), "make it perfect" and all caps, as in code mode.
+- Most writing prompts are 4 to 10 lines.
+
+`references/writing.md` holds ready-made shapes (email, follow-up, bad news, post, summary, report, slides, plan, cover letter, rewrite). Read only the section that matches, and only if the shape is not obvious.
+
+### W4: Return it
+
+Output exactly this, and nothing else:
+
+1. The improved prompt in a fenced `text` code block, ready to copy.
+2. One line, `Run with:`:
+   - short pieces (email, message, post, rewrite, translation): `sonnet`
+   - long or demanding work (a report, research, a strategy, a plan, or analysing long material): `opus`, with extended thinking on
+3. If any `<placeholders>` remain, one line listing them.
+4. Any one-line notice (a secret was removed).
+5. One line: `Run it now, or edit first?`
+
+If the user says to run it, carry out the improved prompt as the task.
+
 ## Examples
 
 **Input:** `hi, the discount is wrong can you please fix it and make no mistakes thanks`
@@ -174,4 +240,21 @@ Rename accList to accounts in @force-app/main/default/classes/AccountService.cls
 ```
 
 Run with: haiku, effort low
+Run it now, or edit first?
+
+**Input:** `write an email to my landlord about the heater`
+
+Questions asked: what is wrong with the heater and since when; what do you want the landlord to do, and by when; tone (options: Polite and firm, Friendly, Formal, You decide); length (options: Short, About 150 words, You decide).
+
+**Output:**
+
+```text
+Write an email to my landlord, <landlord name>, asking him to repair the heater in my flat by Friday 10 October.
+Facts: the heater stopped working on 2 October. I reported it by phone on 3 October and nothing has happened since. The flat is at 14°C in the mornings.
+Tone: polite and firm. Remind him it is his responsibility, without threats.
+Format: under 150 words, with a clear subject line. End by asking him to confirm a repair date.
+```
+
+Run with: sonnet
+Placeholders: `<landlord name>`
 Run it now, or edit first?

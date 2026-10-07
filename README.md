@@ -1,24 +1,47 @@
 # Prompt Fixer
 
-A Claude plugin that turns a rough prompt into one Claude Code can run in a single pass.
+A Claude plugin that turns a rough request into a clear prompt Claude can get right the first time.
 
-You paste a vague request like "the discount is wrong, can you fix it". Prompt Fixer asks you up to four short questions: which file, what the error is, what "fixed" looks like. Then it hands back a short prompt you can copy and run, with a suggested model and effort level. It doesn't run your task or read your project files. It asks you instead, because you already know the answers.
+You type something vague, like "write an email to my landlord" or "the discount is wrong, fix it". Prompt Fixer asks you a few quick questions, mostly as options you can click. Then it hands back a short prompt you can copy and run, with a suggested model. It doesn't do the task itself or read your files. It asks you instead, because you already know the answers.
 
-It works with any codebase. The examples and test commands lean toward Salesforce (Apex, LWC, Flow, metadata), because that's where it started.
+It works in two modes:
+
+- **Writing and everyday tasks**, for anyone: emails, messages, posts, reports, summaries, slides, plans and rewrites. It asks what the piece is about, who it's for, the tone, the length and anything to include or avoid. If you have a skill installed that fits, like a document or slides skill, it asks whether to use it.
+- **Code**, in Claude Code: it asks which file, what the error is and how to check the fix, then writes a prompt that ends with a command to prove it worked. It works with any codebase. The examples and test commands lean toward Salesforce (Apex, LWC, Flow, metadata), because that's where it started.
 
 **Quick install:** go to [claude.ai/customize/plugins](https://claude.ai/customize/plugins), open **Discover**, search for **Prompt Fixer** and select **Add**. Other ways to install are [below](#install).
 
 ## What it does
 
-- Asks only for what's missing from your prompt, all in one batch.
-- Rewrites the prompt to start with a verb, name the exact file and method, include the real error text, and end with a `Done when:` check Claude can run.
+- Asks only for what's missing from your prompt, in one batch (two for writing, when the details need it).
+- For writing, asks about content first, then audience, tone and length. Style questions have a "You decide" option, so you can skip what you don't care about.
+- Offers your installed skills when one fits the job, and names it in the prompt.
+- Never makes up facts. Names, dates and numbers you didn't give become `<placeholders>` for you to fill in.
+- For code, rewrites the prompt to start with a verb, name the exact file and method, include the real error text, and end with a `Done when:` check Claude can run.
 - Removes filler that wastes tokens: greetings, "make no mistakes", "you are a senior architect", ALL CAPS warnings.
 - Splits a prompt that mixes unrelated tasks into separate prompts.
-- Tells you when you don't need a prompt at all. A standing rule goes in `CLAUDE.md`, and some jobs are better done with a built-in command like `/rewind` or `/clear`.
+- For code, tells you when a built-in command or a rule does the job better. A standing rule goes in `CLAUDE.md`, and some jobs are better done with a built-in command like `/rewind` or `/clear`.
 - Strips out any API key, token or password you pasted by accident.
-- Adds a confirmation step before risky work such as deleting data or deploying to production.
+- Adds a confirmation step before risky code work such as deleting data or deploying to production.
 
-### Example
+### Example: an email
+
+You type:
+
+```text
+write an email to my landlord about the broken heater
+```
+
+Prompt Fixer asks what's wrong and since when, what you want the landlord to do, the tone (polite and firm, friendly, formal, or "you decide"), and whether to use your humanizer skill. Then it returns:
+
+```text
+Write an email to my landlord, <landlord name>, asking him to repair the heater in my flat by Friday 10 October.
+Facts: the heater stopped working on 2 October. I reported it by phone on 3 October and nothing has happened since.
+Tone: polite and firm. Remind him repairs are his responsibility, without threats.
+Format: under 150 words, with a clear subject line. End by asking him to confirm a repair date.
+```
+
+### Example: code
 
 You type:
 
@@ -121,13 +144,13 @@ In Claude Code, type:
 
 You can also type `/prompt-fixer` and pick it from the list. If you copied the folder (Option 3), the command is just `/prompt-fixer`.
 
-In Claude chat or Cowork, type `/` in the message box and pick Prompt Fixer, or paste your draft and ask Claude to improve it.
+In Claude chat or Cowork, type `/` in the message box and pick Prompt Fixer, or paste your draft and ask Claude to improve it. For example: "help me write a prompt for an email to my landlord".
 
 You don't have to use the slash command. Claude picks up the skill when you paste a draft prompt and ask it to improve, fix, rewrite or tighten it, or ask "how should I ask Claude this?"
 
 Answer the questions, then copy the prompt it returns. Or reply "run it" and Claude will run the improved prompt as the task.
 
-Prompt Fixer is written for Claude Code. In chat and Cowork it still sharpens your prompt, but tips about Claude Code commands such as `/clear` or plan mode won't apply there.
+Writing requests work the same everywhere. For code requests, some tips (Claude Code commands such as `/clear` or plan mode) only apply in Claude Code.
 
 ## Updating
 
@@ -152,7 +175,8 @@ Prompt Fixer is written for Claude Code. In chat and Cowork it still sharpens yo
 skills/prompt-fixer/
 ├── SKILL.md                 The instructions Claude follows
 └── references/
-    └── templates.md         Ready-made prompt shapes for common tasks
+    ├── templates.md         Prompt shapes for code tasks
+    └── writing.md           Prompt shapes for emails, posts, documents and plans
 ```
 
 `templates.md` covers debugging (exceptions, failing tests, governor limits, deploy errors, LWC and flow faults, regressions), building (Apex classes, triggers, test classes, LWC, metadata, flows, refactors), and planning or review. Claude reads only the section it needs.

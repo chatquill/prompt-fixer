@@ -1,7 +1,7 @@
 {
   "name": "prompt-fixer",
-  "version": "1.2.0",
-  "description": "Turns a rough prompt into a precise one Claude Code can run in one pass, by asking a few targeted questions first.",
+  "version": "1.3.0",
+  "description": "Turns a rough prompt into a precise one by asking a few targeted questions first. Works for code in Claude Code and for everyday writing: emails, posts, reports, plans and slides.",
   "author": {
     "name": "Shakeel Mohun",
     "url": "https://github.com/chatquill"
@@ -9,5 +9,14 @@
   "homepage": "https://github.com/chatquill/prompt-fixer",
   "repository": "https://github.com/chatquill/prompt-fixer",
   "license": "MIT",
-  "keywords": ["prompt", "prompt-engineering", "skill", "salesforce", "apex", "lwc"]
+  "keywords": [
+    "prompt",
+    "prompt-engineering",
+    "skill",
+    "writing",
+    "email",
+    "salesforce",
+    "apex",
+    "lwc"
+  ]
 }
