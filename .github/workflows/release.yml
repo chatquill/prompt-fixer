@@ -1,9 +1,15 @@
 name: Release
 
+# Raise "version" in .claude-plugin/plugin.json and push to master.
+# If there is no GitHub release for that version yet, this builds
+# prompt-fixer.skill and publishes release v<version> with it attached.
 on:
   push:
-    tags:
-      - 'v*'
+    branches:
+      - master
+    paths:
+      - '.claude-plugin/plugin.json'
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -14,21 +20,30 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Check the tag matches plugin.json
-        run: |
-          version=$(jq -r .version .claude-plugin/plugin.json)
-          if [ "v$version" != "$GITHUB_REF_NAME" ]; then
-            echo "Tag $GITHUB_REF_NAME does not match plugin.json version $version"
-            exit 1
-          fi
+      - name: Read the version
+        id: version
+        run: echo "tag=v$(jq -r .version .claude-plugin/plugin.json)" >> "$GITHUB_OUTPUT"
 
-      - name: Build prompt-fixer.skill
-        run: cd skills && zip -r ../prompt-fixer.skill prompt-fixer
-
-      - name: Create the release
+      - name: Skip if the release already exists
+        id: check
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "$GITHUB_REF_NAME" prompt-fixer.skill \
-            --title "$GITHUB_REF_NAME" \
-            --notes "Download prompt-fixer.skill to upload the skill to Claude.ai. Claude Code users get this version from the Claude directory or with /plugin marketplace update prompt-fixer."
+          if gh release view "${{ steps.version.outputs.tag }}" >/dev/null 2>&1; then
+            echo "Release ${{ steps.version.outputs.tag }} already exists, nothing to do."
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build prompt-fixer.skill
+        if: steps.check.outputs.exists != 'true'
+        run: cd skills && zip -r ../prompt-fixer.skill prompt-fixer
+
+      - name: Create the release
+        if: steps.check.outputs.exists != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${{ steps.version.outputs.tag }}" prompt-fixer.skill \
+            --target "$GITHUB_SHA" \
+            --title "${{ steps.version.outputs.tag }}" \
+            --notes "Download prompt-fixer.skill to upload the skill to Claude.ai. Claude Code users get this version from the Claude directory, or with /plugin marketplace update prompt-fixer."
