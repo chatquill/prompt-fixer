@@ -42,10 +42,12 @@ Size the result to the task. If the change could be described as a one-line diff
 If the prompt holds more than one task, split it before anything else. Tasks are related when one needs the other (a new field and the component that shows it); keep those together as numbered steps in one prompt. Unrelated tasks (a bug fix plus a new feature) become separate prompts, each with its own Done-when, and the output tells the user to run them in separate sessions with `/clear` between. The four-question limit applies per prompt; ask about the first task now and say the rest will follow.
 
 Check whether a prompt is the right tool at all:
-- A standing rule ("always use TestDataFactory", "never use SeeAllData") is not a task. Output it as a line for CLAUDE.md and say that is where it belongs.
-- If a built-in command does the job, name it instead of writing a prompt: `/rewind` to undo, `/clear` to start over, `/compact` to shrink context, `/model` or `/effort` to switch.
+- A standing rule ("always use TestDataFactory", "never use SeeAllData") is not a task. Return a prompt that adds it to CLAUDE.md ("Add this line to CLAUDE.md: ...") and say that is where it belongs.
+- If a built-in command does the job, return that command in the code block (for example `/rewind`) and say so: `/rewind` to undo, `/clear` to start over, `/compact` to shrink context, `/model` or `/effort` to switch.
 
-If the prompt already has every part it needs and no filler, do not rewrite or reprint it. Reply `Already good. Run as is.` followed by the `Run with:` line, and stop.
+If the prompt already has every part it needs and no filler, return it unchanged in the code block, add the line `Already good. Run as is.`, then the `Run with:` line.
+
+Every reply ends with at least one prompt in a fenced `text` code block, in every case, including advice and "how should I" requests. Never answer the question, diagnose the problem or start the task yourself; the prompt is the output.
 
 ## Step 2: Ask, once
 
@@ -79,7 +81,8 @@ Add:
 - Point to an existing file to copy the pattern from, when one exists.
 - State the scope positively: "Change only `buildQuote`."
 - Give a short reason for any constraint that is not obvious ("the LWC calls this method").
-- End with `Done when:` and a check Claude can run. See the table below.
+- End with `Done when:` and the exact command to run, scoped to the changed code, that finishes on its own: one test file or test name, not the whole suite, and never a watch mode, `--server`, `serve` or dev server. Naming a tool ("ember-tsc passes") is not enough; write the command. If you do not know the command, ask for it. If the user does not know either, use a placeholder such as `<command that runs only doc-checklist-item-test>` and list it with the other placeholders. See the table below.
+- Do not state what you have not confirmed as fact. If the change depends on something the user did not confirm (a field exists, a value is passed in, an API name is available), write it as a condition and widen the scope to where the data comes from: "If answers do not carry `apiName` yet, add it where they are built." Otherwise the prompt fences Claude into files that cannot complete the change.
 - For bugs, ask for a failing test first, then the fix.
 - State the symptom and the expected result, and leave the solution to Claude. Include a specific fix or technique only if the user named it; adding your own guess narrows the search to an approach nobody checked.
 - Ask for a short reply when useful: "No recap", "Answer in 5 lines".
@@ -125,14 +128,15 @@ For other stacks, use the project's own test, build or lint command.
 Output exactly this, and nothing else:
 
 1. The improved prompt in a fenced `text` code block, ready to copy.
-2. One line, `Run with:`, giving the suggested model, effort and mode:
-   - trivial edit (rename, label, typo): `haiku`, effort low
+2. One line, `Run with:`, giving the suggested model, effort and mode. Use only these exact combinations; never pair `haiku` with any effort other than low:
+   - mechanical edit in one file (rename, label, typo, a constant), where the prompt names the file, nothing needs judging, and the Done-when command is known (no placeholder): `haiku`, effort low
    - read-only question about one file, or advice with no edits: `sonnet`, effort low
    - small metadata change (one field, validation rule, permission, flow outcome): `sonnet`, effort low
-   - normal coding and debugging: `sonnet`, effort medium
+   - normal coding and debugging, any change that touches more than one file, or any task that must judge whether the change is right: `sonnet`, effort medium
    - a change to one component or class where the approach is unclear, or a migration: `sonnet`, effort medium, plan mode first
    - architecture or a refactor across many files: `opusplan`, plan mode first
    - anything that reads many files or logs: add "via a subagent"
+   When in doubt between two rows, pick the stronger one. A smaller model that needs twice the tool calls, or a second attempt, costs more than it saves.
 3. If any `<placeholders>` remain, one line listing them.
 4. Any one-line notice required above (a secret was removed; a rule belongs in CLAUDE.md; a built-in command does this).
 5. One line: `Run it now, or edit first?`
