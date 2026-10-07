@@ -1,6 +1,8 @@
 ---
 name: prompt-fixer
 description: Turns a rough or vague Claude Code prompt into a precise, token-efficient one by asking a few targeted questions first. Use whenever the user runs /prompt-fixer, pastes a draft prompt and asks to improve, fix, rewrite, sharpen or optimize it, says things like "make this a good prompt" or "how should I ask Claude this", or wants help phrasing a coding, debugging or Salesforce (Apex, LWC, Flow, metadata) request before running it.
+argument-hint: "[your rough prompt, error or stack trace]"
+effort: medium
 ---
 
 # Prompt fixer
@@ -8,6 +10,20 @@ description: Turns a rough or vague Claude Code prompt into a precise, token-eff
 Take the user's rough prompt, ask only the questions needed to fill the gaps, and return a prompt that Claude Code can execute in one pass.
 
 The goal is fewer tokens overall: a precise prompt avoids exploration and correction rounds. So this skill must itself stay cheap. Do not execute the rough prompt, and do not read project files to guess at answers. Ask the user instead; they already know.
+
+Tools: use only AskUserQuestion, and Read for `references/templates.md`. Do not run shell commands (no Bash, grep, cat or date) and do not use Grep or Glob, not even on this skill's own files. Each of those calls stops for a permission prompt, and the user sees nothing but a waiting spinner.
+
+## Long pastes
+
+Users often paste whole stack traces, debug logs or source files. Do not analyse them. Your job is to write the prompt, not to diagnose the bug, so a long paste should take no more effort than a short one. Skim it for these, then stop reading:
+
+- the first exception or error line, verbatim
+- the top 3 to 5 frames that point to the user's own code (skip framework and library frames)
+- the trigger or condition the user describes
+- file, class, method, object and field names
+- any secrets to remove
+
+Do not decode timestamps, count repeated lines, compare frames or reason about the root cause. In the improved prompt, never reprint the whole paste. Keep the error line and the top frames, and point to the rest with `@file` or "the full trace is in <path>".
 
 ## Step 1: Check the five parts
 
@@ -37,6 +53,7 @@ Ask for the missing parts in a single batch of at most four questions. Use the A
 
 - Ask only for what is missing. Never ask for something already in the prompt, in CLAUDE.md, or earlier in the conversation.
 - Offer likely answers as options where possible, so the user can pick instead of type. Always allow a free-text answer.
+- Options for Where may only use names that appear in the prompt. If the prompt names no file, offer "I'll type the path" and "Don't know" rather than guessed paths: a guessed option that the user clicks becomes an invented fact.
 - Prefer the questions that prevent the most rework, in this order: Where, Done when, Context (exact error text), Constraints.
 - For bugs, always get the exact error message or symptom and what "fixed" looks like.
 - If it is unclear whether the user wants the change made or only advice ("can you suggest", "what do you think", "should I"), ask which. Then write "Change..." for the first, or "Recommend... Do not edit" for the second.
